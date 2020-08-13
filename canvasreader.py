@@ -6,6 +6,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+def logs(course, title, detail):
+    template = '{:^12} | {:^30} | {:^40} |'
+    table = [course, title, detail]
+    print(template.format(*table))
 
 with open("parametros.json") as file:
     param = json.load(file)
@@ -25,11 +29,18 @@ for curso in param["cursos"]:
         password.send_keys(credential["password"] + Keys.RETURN)
         content = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "content")))
-        not_read = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.TAG_NAME, "no leídos")))
-        #print(content.text)
-        print(not_read.text)
+        time.sleep(2)
+        wrapper = content.find_elements_by_class_name("ic-item-row__content-col")
+        for j in wrapper:
+            if "no leídos" in j.text:
+                pos = wrapper.index(j)
+                txt = j.text
+                txt = txt.split("\n")
+                print(f"{param['cursos'][curso]} | {txt[1]}")
+                print(txt[3])
+                print("")
     finally:
         driver.quit()
-    time.sleep(5)
+
+
 
