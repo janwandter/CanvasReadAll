@@ -15,18 +15,25 @@ with open("parametros.json") as file:
     param = json.load(file)
 with open("credentials.json") as file:
     credential = json.load(file)
+PATH = "C:\Program Files (x86)\chromedriver.exe"
+op = webdriver.ChromeOptions()
+op.add_argument('headless')
+op.add_argument('--disable-gpu')
+op.add_argument("--log-level=3")
+driver = webdriver.Chrome(PATH, options=op)
+driver.get(f"https://cursos.canvas.uc.cl")
+try:
+    username = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "username")))
+    username.send_keys(credential["username"] + Keys.RETURN)
+    password = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "password")))
+    password.send_keys(credential["password"] + Keys.RETURN)
+finally:
+    pass
 for curso in param["cursos"]:
-    PATH = "C:\Program Files (x86)\chromedriver.exe"
-    driver = webdriver.Chrome(PATH)
-    driver.get(f"https://cursos.canvas.uc.cl/courses/{curso}/announcements")
-    #Clase no leido: fOyUs_bGBk fOyUs_cuDs cnWSA_bcSS cnWSA_KksD cnWSA_bXiG cnWSA_dDWY cnWSA_bXgF cnWSA_bBTa
     try:
-        username = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "username")))
-        username.send_keys(credential["username"] + Keys.RETURN)
-        password = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "password")))
-        password.send_keys(credential["password"] + Keys.RETURN)
+        driver.get(f"https://cursos.canvas.uc.cl/courses/{curso}/announcements")
         content = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "content")))
         time.sleep(2)
@@ -40,7 +47,8 @@ for curso in param["cursos"]:
                 print(txt[3])
                 print("")
     finally:
-        driver.quit()
+        pass
+       # driver.quit()
 
 
 
